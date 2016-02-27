@@ -41,6 +41,12 @@ public class Agent extends AbstractPlayer{
     	double probRoll = randomGenerator.nextDouble();
     	
     	if (probRoll < epsilon) {
+            //Get the available actions in this game.
+            ArrayList<Types.ACTIONS> actions = stateObs.getAvailableActions();
+            //Determine an index randomly and get the action to return.
+            int index = randomGenerator.nextInt(actions.size());
+            bestAction = actions.get(index);  		
+    	} else {
         	for (Types.ACTIONS action : stateObs.getAvailableActions()) {
         		StateObservation stCopy = stateObs.copy();	//copy current state
         		stCopy.advance(action);						//advance the copied state
@@ -51,13 +57,7 @@ public class Agent extends AbstractPlayer{
         			maxQ = Q;
         			bestAction = action;
         		}
-        	}    		
-    	} else {
-            //Get the available actions in this game.
-            ArrayList<Types.ACTIONS> actions = stateObs.getAvailableActions();
-            //Determine an index randomly and get the action to return.
-            int index = randomGenerator.nextInt(actions.size());
-            bestAction = actions.get(index);
+        	}
     	}
 
     	
