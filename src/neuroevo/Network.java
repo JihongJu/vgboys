@@ -65,8 +65,12 @@ public class Network {
 	}
 	
 	private boolean layoutCheck(ArrayList<Integer> layout, ArrayList<Double> weights) {
-		//TODO check if weights match with layout or not
-		return true;
+		//check if weights match with layout or not
+		int total_weights = 0;
+		for(int i = 0; i < layout.size() - 2; i ++){
+			total_weights += layout.get(i) * layout.get(i + 1);
+		}
+		return total_weights == weights.size();
 	}
 	
 	private ArrayList<Double> parseWeights(ArrayList<Integer> layout, ArrayList<Double> weights,
@@ -102,6 +106,40 @@ public class Network {
 
 	public Network mutation() {
 	//TODO implement mutation
+		int type = (int)(Math.random() * 5) + 1;
+		int num_of_weights = this.weights.size();
+		int mutation_index = (int)(Math.random() * num_of_weights) + 1;
+		switch(type){
+			case 1 :
+				// completely replace it with a new random value
+				double new_weight = Math.random(); //scale?
+				this.weights.set(mutation_index, new_weight);
+				break;
+			case 2 :
+				// change the weight by some percentage.
+				double persentage = Math.random() * 2 - 1;
+				this.weights.set(mutation_index, this.weights.get(mutation_index) * persentage);
+				break;
+			case 3 :
+				// add or subtract a random number between 0 and 1
+				double change = Math.random() * 2 - 1;
+				this.weights.set(mutation_index, this.weights.get(mutation_index) + change);
+				break;
+			case 4 :
+				// Change the sign of a weight
+				this.weights.set(mutation_index,this.weights.get(mutation_index) * (-1));
+				break;
+			case 5 :
+				// swap weights on a single neuron
+				int swap_index = (int)(Math.random() * num_of_weights) + 1;
+				while(swap_index == mutation_index){
+					swap_index = (int)(Math.random() * num_of_weights) + 1;
+				}
+				double temp = this.weights.get(swap_index);
+				this.weights.set(swap_index, this.weights.get(mutation_index));
+				this.weights.set(mutation_index, temp);
+				break;
+		}
 		Network child;
 		//TODO initialize child_id and child_weights
 		int child_id = -1;
@@ -111,5 +149,4 @@ public class Network {
 		return child;
 	}
 	
-
 }
