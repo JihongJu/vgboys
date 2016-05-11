@@ -1,6 +1,7 @@
 package neuroevo;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Matrix {
 	
@@ -91,6 +92,14 @@ public class Matrix {
 	
 	public void setMatrix(Double[][] matrix){
 		this.matrix = matrix;
+	}
+	
+	public ArrayList<Double> getWeights(){
+		ArrayList<Double> weights = new ArrayList<Double>();
+		for(int i = 0; i < matrix.length; i ++){
+			weights.addAll(Arrays.asList(matrix[i]));
+		}
+		return weights;
 	}
 	
 }
