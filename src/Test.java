@@ -1,6 +1,10 @@
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 import core.ArcadeMachine;
+import neuroevo.GenticsSNES;
+import neuroevo.Network;
 
 /**
  * Created with IntelliJ IDEA.
@@ -23,6 +27,7 @@ public class Test
         String sampleGAController = "controllers.sampleGA.Agent";
         String tester = "controllers.Tester.Agent";
         String vgboys = "vgboys.Agent";
+        String neuroevo = "neuroevo.Agent";
 
         //Available Generators
         String randomLevelGenerator = "levelGenerators.randomLevelGenerator.LevelGenerator";
@@ -61,14 +66,15 @@ public class Test
 
 
         //Other settings
-        boolean visuals = true;
+        boolean visuals = false;
 //        boolean visuals = false;
         String recordActionsFile = null; //where to record the actions executed. null if not to save.
         int seed = new Random().nextInt();
 
         //Game and level to play
-        int gameIdx = 5;
+        int gameIdx = 8;
         int levelIdx = 0; //level names from 0 to 4 (game_lvlN.txt).
+        
         String game = gamesPath + games[gameIdx] + ".txt";
         String level1 = gamesPath + games[gameIdx] + "_lvl" + levelIdx +".txt";
         
@@ -80,7 +86,42 @@ public class Test
         // 2. This plays a game in a level by the controller.
 //        ArcadeMachine.runOneGame(game, level1, visuals, sampleMCTSController, recordActionsFile, seed);
 //        ArcadeMachine.runOneGame(game, level1, visuals, tester, recordActionsFile, seed);
-        ArcadeMachine.runOneGame(game, level1, visuals, vgboys, recordActionsFile, seed);
+        int playerIDTemp=0;
+        int populationSize=20;
+        int iterationMax=100;
+        double learningRateMeans=0.005;
+        double learningRateSigmas=0.000000000001;
+        ArrayList<Integer> test_layout = new ArrayList<Integer>(Arrays.asList(15, 5, 5, 6));
+        GenticsSNES SNESWeightGenerator=new GenticsSNES(test_layout,populationSize,learningRateMeans,learningRateSigmas);
+        
+        Network.setGenetics(SNESWeightGenerator);
+        
+        //TODO The running of multiple games, sending score to the network and then learning from that.
+        ArrayList<Double> bestScoresObtained=new ArrayList<Double>(iterationMax);
+        ArrayList<Double> summedScoreObtained=new ArrayList<Double>(iterationMax);
+
+        for(int iter=0;iter<iterationMax;iter++){
+	        ArrayList<Double> scoresPopulation=new ArrayList<Double>(populationSize);
+	        double curBest=Double.NEGATIVE_INFINITY;
+	        double summedScores=0;
+	        for(int individual=0;individual<populationSize;individual++){
+	        	double[] scoresGiven=ArcadeMachine.runOneGame(game, level1, visuals, neuroevo, recordActionsFile, seed,playerIDTemp);
+	        	double relevantScore=scoresGiven[0];
+	        	scoresPopulation.add(relevantScore);
+	        	summedScores+=relevantScore;
+	        	if(curBest<relevantScore){
+					curBest=relevantScore;
+				}
+	        }
+        	System.out.println("best in this round:"+curBest);
+        	System.out.println("Summed scores in this round:"+summedScores);
+
+        	bestScoresObtained.add(curBest);
+        	summedScoreObtained.add(summedScores);
+	        SNESWeightGenerator.produceNextGeneration(scoresPopulation);
+        }
+        System.out.println("best scores in each iteration:"+bestScoresObtained.toString());
+        System.out.println("Summed scores in each iteration:"+summedScoreObtained.toString());
 
         // 3. This replays a game from an action file previously recorded
         //String readActionsFile = "actionsFile_aliens_lvl0.txt";  //This example is for

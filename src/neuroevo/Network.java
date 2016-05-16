@@ -20,6 +20,8 @@ public class Network {
 	public ArrayList<Network> parents;
 	public ArrayList<Network> children;
 	
+	//Genetic object to produce new networks inside the 
+	static private GenticsSNES geneticGenerator;
 	
 	public Network(int netid, ArrayList<Integer> layout, ArrayList<Double> weights) throws Exception {
 		/*TODO 
@@ -42,6 +44,36 @@ public class Network {
 			throw new Exception("Network layout mismatch: Weights do "
 					+ "not match with Network's layout.\n");
 		}
+	}
+	
+	public Network() throws Exception {
+		/*TODO 
+		 * layout is an array of number of nodes for each layer from input layer, 
+		 * hidden layers to output layer;
+		 * weights is an array of flatten connection weights for full-connected networks.
+		 * Example: a network with layout [2, 2, 1] has weights [w00, w01, w10, w11, w00, w01]
+		 * where wji represents weights for connection from i-th node in the previous layer to
+		 * j-th node in the next layer.
+		*/
+		weights=geneticGenerator.getNextNetwork();
+		layout=geneticGenerator.getLayout();
+		if(layoutCheck(layout, weights)) {
+		this.netid = 0;//TODO set better value here (is this id even needed?)
+		//this.layout = layout;
+		this.inputDimension = layout.get(0);			// include bias node
+		this.outputDimension = layout.get(layout.size() - 1);
+		this.numHiddenLayers = layout.size() - 2;		// exclude input and output layer
+		//this.weights = weights;
+		}
+		else {
+			throw new Exception("Network layout mismatch: Weights do "
+					+ "not match with Network's layout.\n");
+		}
+	}
+	
+	static public void setGenetics(GenticsSNES givenGenerator){
+		geneticGenerator= givenGenerator;
+		return;
 	}
 	
 	public ArrayList<Double> fire(ArrayList<Double> inputs) throws Exception {
