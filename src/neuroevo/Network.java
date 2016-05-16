@@ -77,7 +77,9 @@ public class Network {
 	}
 	
 	public ArrayList<Double> fire(ArrayList<Double> inputs) throws Exception {
-		//TODO A function fires the Network and returns the output given the inputs.
+		/* A function fires the Network and returns the output given the inputs.
+		 * Output is possibilities for each actions
+		*/
 		//first check if input and inputDimension match or not, 
 		if(inputs.size() + 1 == inputDimension) {
 			this.inputs = inputs;
@@ -123,8 +125,9 @@ public class Network {
 	
 	private ArrayList<Double> activation(ArrayList<Double> values) {
 		//A sigmoid activation function
-		values.stream().map((v) -> 1 / (1 + Math.exp(-v)));
-		return values;
+		ArrayList<Double> activatedValues = new ArrayList<>();
+		values.stream().map((v) -> 1 / (1 + Math.exp(-v))).forEach(v -> activatedValues.add(v));
+		return activatedValues;
 	}
 	
 	private boolean layoutCheck(ArrayList<Integer> layout, ArrayList<Double> weights) {
