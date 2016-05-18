@@ -134,63 +134,180 @@ public class Agent extends AbstractPlayer{
     	inputs.add(avatarSpeed);
 
     	
-    	
-    	
 		try {
 	    	ArrayList<Double> outputs;
 			outputs = decisionNetwork.fire(inputs);
-	    	//TODO select best output given inputs (find set of possibles, find from that set the one with the highest score)
-	    	ArrayList<Types.ACTIONS> actionsPossible=stateObs.getAvailableActions(true);
-	    	double bestScore=Double.NEGATIVE_INFINITY;
-	    	Types.ACTIONS bestAction=actionsPossible.get(0);
-	    	
-	    	//Map actions to their scores and select the best. This maps 0 to NIL, 1 to UP, 2 to RIGHT, 3 to DOWN, 4 to LEFT and 5 to USE
-	    	for(Types.ACTIONS actionPossiblitity:actionsPossible){
-	    		if(actionPossiblitity.equals(Types.ACTIONS.ACTION_NIL)){
-	    			double actionScore=outputs.get(0);
-	    			if(actionScore>bestScore){
-	    				bestAction=actionPossiblitity;
-	    				bestScore=actionScore;
-	    			}
-	    		}else if(actionPossiblitity.equals(Types.ACTIONS.ACTION_UP)){
-	    			double actionScore=outputs.get(1);
-	    			if(actionScore>bestScore){
-	    				bestAction=actionPossiblitity;
-	    				bestScore=actionScore;
-	    			}
-	    		}else if(actionPossiblitity.equals(Types.ACTIONS.ACTION_RIGHT)){
-	    			double actionScore=outputs.get(2);
-	    			if(actionScore>bestScore){
-	    				bestAction=actionPossiblitity;
-	    				bestScore=actionScore;
-	    			}
-	    		}else if(actionPossiblitity.equals(Types.ACTIONS.ACTION_DOWN)){
-	    			double actionScore=outputs.get(3);
-					if(actionScore>bestScore){
-						bestAction=actionPossiblitity;
-						bestScore=actionScore;
-					}
-	    		}else if(actionPossiblitity.equals(Types.ACTIONS.ACTION_LEFT)){
-	    			double actionScore=outputs.get(4);
-	    			if(actionScore>bestScore){
-	    				bestAction=actionPossiblitity;
-	    				bestScore=actionScore;
-	    			}
-	    		}else if(actionPossiblitity.equals(Types.ACTIONS.ACTION_USE)){
-	    			double actionScore=outputs.get(5);
-	    			if(actionScore>bestScore){
-	    				bestAction=actionPossiblitity;
-	    				bestScore=actionScore;
-	    			}
-	    		}
-	    	}
-	    	
-	        return bestAction;
+	    	ArrayList<Types.ACTIONS> actionsPossible=stateObs.getAvailableActions(false);
+	        return selectActionEpsilonGreedy(actionsPossible,outputs);
 		} catch (Exception e) {
 			// TODO better catch
 			e.printStackTrace();
 			return Types.ACTIONS.ACTION_NIL;
 		}
+    }
+    
+    private Types.ACTIONS selectActionGreedy(ArrayList<Types.ACTIONS> actionsPossible,ArrayList<Double> outputs){
+    	//TODO select best output given inputs (find set of possibles, find from that set the one with the highest score)
+    	double bestScore=Double.NEGATIVE_INFINITY;
+    	Types.ACTIONS bestAction=actionsPossible.get(0);
+    	
+    	//Map actions to their scores and select the best. This maps 0 to NIL, 1 to UP, 2 to RIGHT, 3 to DOWN, 4 to LEFT and 5 to USE
+    	for(Types.ACTIONS actionPossiblitity:actionsPossible){
+    		if(actionPossiblitity.equals(Types.ACTIONS.ACTION_USE)){
+    			double actionScore=outputs.get(0);
+    			if(actionScore>bestScore){
+    				bestAction=actionPossiblitity;
+    				bestScore=actionScore;
+    			}
+    		}else if(actionPossiblitity.equals(Types.ACTIONS.ACTION_UP)){
+    			double actionScore=outputs.get(1);
+    			if(actionScore>bestScore){
+    				bestAction=actionPossiblitity;
+    				bestScore=actionScore;
+    			}
+    		}else if(actionPossiblitity.equals(Types.ACTIONS.ACTION_RIGHT)){
+    			double actionScore=outputs.get(2);
+    			if(actionScore>bestScore){
+    				bestAction=actionPossiblitity;
+    				bestScore=actionScore;
+    			}
+    		}else if(actionPossiblitity.equals(Types.ACTIONS.ACTION_DOWN)){
+    			double actionScore=outputs.get(3);
+				if(actionScore>bestScore){
+					bestAction=actionPossiblitity;
+					bestScore=actionScore;
+				}
+    		}else if(actionPossiblitity.equals(Types.ACTIONS.ACTION_LEFT)){
+    			double actionScore=outputs.get(4);
+    			if(actionScore>bestScore){
+    				bestAction=actionPossiblitity;
+    				bestScore=actionScore;
+    			}
+    		}else if(actionPossiblitity.equals(Types.ACTIONS.ACTION_NIL)){
+    			double actionScore=outputs.get(5);
+    			if(actionScore>bestScore){
+    				bestAction=actionPossiblitity;
+    				bestScore=actionScore;
+    			}
+    		}
+    	}
+    	
+        return bestAction;
+    }
+    
+    private Types.ACTIONS selectActionEpsilonGreedy(ArrayList<Types.ACTIONS> actionsPossible,ArrayList<Double> outputs){
+    	//TODO select best output given inputs (find set of possibles, find from that set the one with the highest score)
+    	double bestScore=Double.NEGATIVE_INFINITY;
+    	double epsilon=0.1;
+    	if(randomGenerator.nextDouble()<epsilon){
+    		return actionsPossible.get(randomGenerator.nextInt(actionsPossible.size()));
+    	}
+    	Types.ACTIONS bestAction=actionsPossible.get(0);
+    	
+    	//Map actions to their scores and select the best. This maps 0 to NIL, 1 to UP, 2 to RIGHT, 3 to DOWN, 4 to LEFT and 5 to USE
+    	for(Types.ACTIONS actionPossiblitity:actionsPossible){
+    		if(actionPossiblitity.equals(Types.ACTIONS.ACTION_USE)){
+    			double actionScore=outputs.get(0);
+    			if(actionScore>bestScore){
+    				bestAction=actionPossiblitity;
+    				bestScore=actionScore;
+    			}
+    		}else if(actionPossiblitity.equals(Types.ACTIONS.ACTION_UP)){
+    			double actionScore=outputs.get(1);
+    			if(actionScore>bestScore){
+    				bestAction=actionPossiblitity;
+    				bestScore=actionScore;
+    			}
+    		}else if(actionPossiblitity.equals(Types.ACTIONS.ACTION_RIGHT)){
+    			double actionScore=outputs.get(2);
+    			if(actionScore>bestScore){
+    				bestAction=actionPossiblitity;
+    				bestScore=actionScore;
+    			}
+    		}else if(actionPossiblitity.equals(Types.ACTIONS.ACTION_DOWN)){
+    			double actionScore=outputs.get(3);
+				if(actionScore>bestScore){
+					bestAction=actionPossiblitity;
+					bestScore=actionScore;
+				}
+    		}else if(actionPossiblitity.equals(Types.ACTIONS.ACTION_LEFT)){
+    			double actionScore=outputs.get(4);
+    			if(actionScore>bestScore){
+    				bestAction=actionPossiblitity;
+    				bestScore=actionScore;
+    			}
+    		}else if(actionPossiblitity.equals(Types.ACTIONS.ACTION_NIL)){
+    			double actionScore=outputs.get(5);
+    			if(actionScore>bestScore){
+    				bestAction=actionPossiblitity;
+    				bestScore=actionScore;
+    			}
+    		}
+    	}
+    	
+        return bestAction;
+    }
+
+    
+    private Types.ACTIONS selectActionSoftmax(ArrayList<Types.ACTIONS> actionsPossible,ArrayList<Double> outputs){    	
+    	if(actionsPossible.size()>outputs.size()){
+    		throw new IllegalArgumentException("Too few possible actions given the output size of the network");
+    	}
+    	boolean[] actionIsPossible= new boolean[outputs.size()];
+    	//Map actions to their scores and select the best. This maps 0 to NIL, 1 to UP, 2 to RIGHT, 3 to DOWN, 4 to LEFT and 5 to USE
+    	for(Types.ACTIONS actionPossiblitity:actionsPossible){
+    		if(actionPossiblitity.equals(Types.ACTIONS.ACTION_USE)){
+    			actionIsPossible[0]=true;
+    		}else if(actionPossiblitity.equals(Types.ACTIONS.ACTION_UP)){
+    			actionIsPossible[1]=true;
+    		}else if(actionPossiblitity.equals(Types.ACTIONS.ACTION_RIGHT)){
+    			actionIsPossible[2]=true;
+    		}else if(actionPossiblitity.equals(Types.ACTIONS.ACTION_DOWN)){
+    			actionIsPossible[3]=true;
+    		}else if(actionPossiblitity.equals(Types.ACTIONS.ACTION_LEFT)){
+    			actionIsPossible[4]=true;
+    		}else if(actionPossiblitity.equals(Types.ACTIONS.ACTION_NIL)){
+    			actionIsPossible[5]=true;
+    		}
+    	}
+    	
+    	double temperature=1;
+    	double softmaxSum=0;
+    	for(int i=0;i<outputs.size();i++){
+    		if(actionIsPossible[i]){
+	    		softmaxSum+=Math.exp(outputs.get(i)/temperature);
+    		}
+    	}
+    	int actionIndex=5;
+    	double randomSample=randomGenerator.nextDouble();
+    	double curSum=0;
+    	for(int i=0;i<outputs.size();i++){
+    		if(actionIsPossible[i]){
+    			curSum+=Math.exp(outputs.get(i)/temperature)/softmaxSum;
+    			if(curSum>=randomSample){
+    				actionIndex=i;
+    				break;
+    			}
+    		}
+    	}
+    	
+    	Types.ACTIONS actionSelected=Types.ACTIONS.ACTION_NIL;
+    	switch(actionIndex){
+    		case 0: actionSelected=Types.ACTIONS.ACTION_USE;
+    		break;
+    		case 1: actionSelected=Types.ACTIONS.ACTION_UP;
+    		break;
+    		case 2: actionSelected=Types.ACTIONS.ACTION_RIGHT;
+    		break;
+    		case 3: actionSelected=Types.ACTIONS.ACTION_DOWN;
+    		break;
+    		case 4: actionSelected=Types.ACTIONS.ACTION_LEFT;
+    		break;
+    		case 5: actionSelected=Types.ACTIONS.ACTION_NIL;
+    		break;
+    	}
+    	
+        return actionSelected;
     }
 
 }

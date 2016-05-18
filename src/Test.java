@@ -72,7 +72,7 @@ public class Test
         int seed = new Random().nextInt();
 
         //Game and level to play
-        int gameIdx = 8;
+        int gameIdx = 9;
         int levelIdx = 0; //level names from 0 to 4 (game_lvlN.txt).
         
         String game = gamesPath + games[gameIdx] + ".txt";
@@ -89,40 +89,45 @@ public class Test
         int playerIDTemp=0;
         int populationSize=20;
         int iterationMax=100;
-        double learningRateMeans=0.005;
-        double learningRateSigmas=0.000000000001;
-        ArrayList<Integer> test_layout = new ArrayList<Integer>(Arrays.asList(15, 5, 5, 6));
+        double learningRateMeans=0.05;
+        double learningRateSigmas=0.005;
+        ArrayList<Integer> test_layout = new ArrayList<Integer>(Arrays.asList(15, 5, 5));
         GenticsSNES SNESWeightGenerator=new GenticsSNES(test_layout,populationSize,learningRateMeans,learningRateSigmas);
         
         Network.setGenetics(SNESWeightGenerator);
         
         //TODO The running of multiple games, sending score to the network and then learning from that.
         ArrayList<Double> bestScoresObtained=new ArrayList<Double>(iterationMax);
-        ArrayList<Double> summedScoreObtained=new ArrayList<Double>(iterationMax);
+        ArrayList<Double> averageScoreObtained=new ArrayList<Double>(iterationMax);
 
         for(int iter=0;iter<iterationMax;iter++){
+        	System.out.println("Starting round:"+iter+" out of:"+iterationMax);
 	        ArrayList<Double> scoresPopulation=new ArrayList<Double>(populationSize);
 	        double curBest=Double.NEGATIVE_INFINITY;
-	        double summedScores=0;
+	        double averageScores=0;
 	        for(int individual=0;individual<populationSize;individual++){
+	        	//visuals=false;
+	        	//if(individual==0){
+	        	//	visuals=true;
+	        	//}
 	        	double[] scoresGiven=ArcadeMachine.runOneGame(game, level1, visuals, neuroevo, recordActionsFile, seed,playerIDTemp);
 	        	double relevantScore=scoresGiven[0];
 	        	scoresPopulation.add(relevantScore);
-	        	summedScores+=relevantScore;
+	        	averageScores+=relevantScore/populationSize;
 	        	if(curBest<relevantScore){
 					curBest=relevantScore;
 				}
 	        }
         	System.out.println("best in this round:"+curBest);
-        	System.out.println("Summed scores in this round:"+summedScores);
+        	System.out.println("Average scores in this round:"+averageScores);
 
         	bestScoresObtained.add(curBest);
-        	summedScoreObtained.add(summedScores);
+        	averageScoreObtained.add(averageScores);
 	        SNESWeightGenerator.produceNextGeneration(scoresPopulation);
         }
         System.out.println("best scores in each iteration:"+bestScoresObtained.toString());
-        System.out.println("Summed scores in each iteration:"+summedScoreObtained.toString());
-
+        System.out.println("Average scores in each iteration:"+averageScoreObtained.toString());
+        System.out.println("Done");
         // 3. This replays a game from an action file previously recorded
         //String readActionsFile = "actionsFile_aliens_lvl0.txt";  //This example is for
         //ArcadeMachine.replayGame(game, level1, visuals, readActionsFile);

@@ -34,7 +34,7 @@ public class GenticsSNES {
 		}
 		//TODO define good start values
 		double startMean=0;
-		double startSigma=0.05;
+		double startSigma=0.1;
 		weightMean=new ArrayList<Double>(Collections.nCopies(weightAmount, startMean));
 		weightSigma=new ArrayList<Double>(Collections.nCopies(weightAmount, startSigma));
 		
@@ -98,6 +98,8 @@ public class GenticsSNES {
 		nextPopToSend=0;
 		curGeneration+=1;
 		if(scores.size()==populationSize){
+			//Moved utitility calculation to own function for more modularity
+			/*
 			IndexSortingComparator comparator = new IndexSortingComparator(scores);
 			Integer[] indexes = comparator.createIndexArray();
 			Arrays.sort(indexes, comparator);
@@ -105,13 +107,15 @@ public class GenticsSNES {
 			for(int i=0;i<populationSize;i++){
 				utilities[indexes[i]]=populationSize-i;
 			}
+			*/
+			Double[] utilities=getUtilities(scores);
 			
 			Double[] weightGradients=new Double[weightAmount];
 			Double[] sigmaGradients=new Double[weightAmount];
 			Arrays.fill(weightGradients,0.0);
 			Arrays.fill(sigmaGradients,0.0);
 			for(int i=0;i<populationSize;i++){
-				int curUtil=utilities[i];
+				double curUtil=utilities[i];
 				ArrayList<Double> curSamplesArray=populationNormalSamples.get(i);
 				for(int j=0;j<weightAmount;j++){
 					weightGradients[j]+=curUtil*(curSamplesArray.get(j));
@@ -132,6 +136,17 @@ public class GenticsSNES {
 		else{
 			throw new IllegalArgumentException("Too few scores given to create new generation in"+curGeneration);
 		}
+	}
+	
+	private Double[] getUtilities(ArrayList<Double> scores){
+		IndexSortingComparator comparator = new IndexSortingComparator(scores);
+		Integer[] indexes = comparator.createIndexArray();
+		Arrays.sort(indexes, comparator);
+		Double[] utilities=new Double[populationSize];
+		for(int i=0;i<populationSize;i++){
+			utilities[indexes[i]]=(double) (populationSize-i)/populationSize;
+		}
+		return utilities;
 	}
 	
 }
