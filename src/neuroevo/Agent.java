@@ -40,6 +40,10 @@ public class Agent extends AbstractPlayer{
     	//TODO Look into making this more flexible, right now only one of each type is used as input
     	Vector2d avatarPosition=stateObs.getAvatarPosition();
     	
+//    	Double avatar_x = avatarPosition.x;
+//    	Double avatar_y = avatarPosition.y;
+//    	System.out.println(avatar_x + " " + avatar_y + " " + stateObs.getBlockSize());
+    	
     	inputs.add(stateObs.getGameScore());
     	inputs.add((double)stateObs.getGameTick());
 
@@ -81,54 +85,90 @@ public class Agent extends AbstractPlayer{
     		resourceInfo.add(0.0);
     	}
     	inputs.addAll(resourceInfo);
-    	double immovableDist;
-    	double movableDist;
-    	double NPCDist;
-    	double selfCreatedDist;
+//    	double immovableDist;
+//    	double movableDist;
+//    	double NPCDist;
+//    	double selfCreatedDist;
     	if(!(immovableObservations==null)){
     		if(immovableObservations[0].size()<1){
-    			immovableDist=0;
+    			//immovableDist=0;
+    			inputs.add(0.0);
+    			inputs.add(0.0);
+    			inputs.add(0.0);
     		}else{
-    			immovableDist=immovableObservations[0].get(0).sqDist;
+    			//immovableDist=immovableObservations[0].get(0).sqDist;
+    			inputs.add((double)immovableObservations[0].get(0).itype);
+    			inputs.add((double)immovableObservations[0].get(0).position.x);
+    			inputs.add((double)immovableObservations[0].get(0).position.y);
     		}
     	}else{
-    		immovableDist=0;
+    		//immovableDist=0;
+    		inputs.add(0.0);
+			inputs.add(0.0);
+			inputs.add(0.0);
     	}
     	
     	if(!(movableObservations==null)){
     		if(movableObservations[0].size()<1){
-    			movableDist=0;
+    			//movableDist=0;
+    			inputs.add(0.0);
+    			inputs.add(0.0);
+    			inputs.add(0.0);
     		}else{
-    			movableDist=movableObservations[0].get(0).sqDist;
+    			//movableDist=movableObservations[0].get(0).sqDist;
+    			inputs.add((double)movableObservations[0].get(0).itype);
+    			inputs.add((double)movableObservations[0].get(0).position.x);
+    			inputs.add((double)movableObservations[0].get(0).position.y);
     		}
     	}else{
-    		movableDist=0;
+    		//movableDist=0;
+    		inputs.add(0.0);
+			inputs.add(0.0);
+			inputs.add(0.0);
     	}
     	
     	if(!(NPCObservations==null)){
     		if(NPCObservations[0].size()<1){
-    			NPCDist=0;
+    			//NPCDist=0;
+    			inputs.add(0.0);
+    			inputs.add(0.0);
+    			inputs.add(0.0);
     		}else{
-    			NPCDist=NPCObservations[0].get(0).sqDist;
+    			//NPCDist=NPCObservations[0].get(0).sqDist;
+    			inputs.add((double)NPCObservations[0].get(0).itype);
+    			inputs.add((double)NPCObservations[0].get(0).position.x);
+    			inputs.add((double)NPCObservations[0].get(0).position.y);
     		}
     	}else{
-    		NPCDist=0;
+    		//NPCDist=0;
+    		inputs.add(0.0);
+			inputs.add(0.0);
+			inputs.add(0.0);
     	}
     	
     	if(!(selfCreatedObservations==null)){
     		if(selfCreatedObservations[0].size()<1){
-    			selfCreatedDist=0;
+    			//selfCreatedDist=0;
+    			inputs.add(0.0);
+    			inputs.add(0.0);
+    			inputs.add(0.0);
     		}else{
-    			selfCreatedDist=selfCreatedObservations[0].get(0).sqDist;
+    			//selfCreatedDist=selfCreatedObservations[0].get(0).sqDist;
+    			inputs.add((double)selfCreatedObservations[0].get(0).itype);
+    			inputs.add((double)selfCreatedObservations[0].get(0).position.x);
+    			inputs.add((double)selfCreatedObservations[0].get(0).position.y);
     		}
     	}else{
-    		selfCreatedDist=0;
+    		//selfCreatedDist=0;
+    		inputs.add(0.0);
+			inputs.add(0.0);
+			inputs.add(0.0);
     	}
     	
-    	inputs.add(immovableDist);
-    	inputs.add(movableDist);
-    	inputs.add(NPCDist);
-    	inputs.add(selfCreatedDist);
+//    	inputs.add(immovableDist);
+//    	inputs.add(movableDist);
+//    	inputs.add(NPCDist);
+//    	inputs.add(selfCreatedDist);
 
     	double avatarSpeed=stateObs.getAvatarSpeed();
     	inputs.add(avatarSpeed);
@@ -198,7 +238,7 @@ public class Agent extends AbstractPlayer{
     private Types.ACTIONS selectActionEpsilonGreedy(ArrayList<Types.ACTIONS> actionsPossible,ArrayList<Double> outputs){
     	//TODO select best output given inputs (find set of possibles, find from that set the one with the highest score)
     	double bestScore=Double.NEGATIVE_INFINITY;
-    	double epsilon=0.1;
+    	double epsilon=0.3;
     	if(randomGenerator.nextDouble()<epsilon){
     		return actionsPossible.get(randomGenerator.nextInt(actionsPossible.size()));
     	}
@@ -309,5 +349,28 @@ public class Agent extends AbstractPlayer{
     	
         return actionSelected;
     }
-
+    
+    private void checkAround(StateObservation stateObs,int size){
+    	Vector2d avatarPosition = stateObs.getAvatarPosition();
+    	ArrayList<Observation>[][] observationGrid = stateObs.getObservationGrid();
+    	int matrix_size = (1 + size) * size / 2 * 8;
+    	int[][] statearound = new int[size * 2 + 1][size * 2 + 1];
+    	int blocksize = stateObs.getBlockSize();
+    	int avatar_x = (int)(avatarPosition.x / blocksize - 1);
+    	int avatar_y = (int)(avatarPosition.y / blocksize - 1);
+    	for(int i = -1 * size; i < size + 1; i ++){
+    		for(int j = -1 * size; j < size + 1; j ++){
+        		try{
+        			System.out.print(observationGrid[(j+avatar_y)][(i+avatar_x)].get(0).itype + " ");
+        		}
+        		catch(Exception e){
+        			System.out.print(-1 + " ");
+        			continue;
+        		}
+        	}
+    		System.out.println("");
+    	}
+    	System.out.println("");
+    	
+    }
 }

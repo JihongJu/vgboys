@@ -1,5 +1,11 @@
 package neuroevo;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 public class Network {
@@ -13,7 +19,7 @@ public class Network {
 	
 	/* Inputs, Weights and Outputs*/
 	private ArrayList<Double> inputs;
-	private ArrayList<Double> weights;
+	private static ArrayList<Double> weights;
 	private ArrayList<Double> outputs;
 	
 	/* Relationships */
@@ -208,4 +214,64 @@ public class Network {
 		return child;
 	}
 	
+	public void setWeights(ArrayList<Double> weights){
+		this.weights = weights;
+	}
+	
+	public ArrayList<Double> getWeights(){
+		return weights;
+	}
+	
+	public static void saveWeight(){
+		String content = "";
+    	for(Double weight : weights){
+    		content += weight + "\r\n";
+    	}
+    	File file = new File("weights.txt");
+    	try{
+    		file.createNewFile();
+    		BufferedWriter out = new BufferedWriter(new FileWriter(file)); 
+    		out.write(content);
+    		out.flush();
+    		out.close();
+    		System.out.println("weights saved!");
+    	}
+    	catch(Exception e){
+    		e.printStackTrace();
+    	}
+    }
+	
+	public static void saveWeight(ArrayList<Double> weights){
+		String content = "";
+    	for(Double weight : weights){
+    		content += weight + "\r\n";
+    	}
+    	File file = new File("weights.txt");
+    	try{
+    		file.createNewFile();
+    		BufferedWriter out = new BufferedWriter(new FileWriter(file)); 
+    		out.write(content);
+    		out.flush();
+    		out.close();
+    	}
+    	catch(Exception e){
+    		e.printStackTrace();
+    	}
+    }
+    
+    public static void loadWeight(){
+    	File file = new File("weights.txt");
+    	ArrayList<Double> weights_loaded = new ArrayList<Double>();
+    	try{
+    		InputStreamReader reader = new InputStreamReader(new FileInputStream(file));
+    		BufferedReader br = new BufferedReader(reader);
+    		String line = "";  
+            while ((line = br.readLine()) != null) {  
+                weights_loaded.add(Double.parseDouble(line));
+            } 
+    	}
+    	catch(Exception e){
+    		e.printStackTrace();
+    	}
+    }
 }

@@ -13,7 +13,7 @@ import neuroevo.Network;
  * Time: 16:29
  * This is a Java port from Tom Schaul's VGDL - https://github.com/schaul/py-vgdl
  */
-public class Test
+public class ShowTrainedResult
 {
 
     public static void main(String[] args)
@@ -95,46 +95,49 @@ public class Test
         GenticsSNES SNESWeightGenerator=new GenticsSNES(test_layout,populationSize,learningRateMeans,learningRateSigmas);
         
         Network.setGenetics(SNESWeightGenerator);
+        Network.loadWeight();
+        
+        ArcadeMachine.runOneGame(game, level1, true, neuroevo, recordActionsFile, seed,playerIDTemp);
         
         //TODO The running of multiple games, sending score to the network and then learning from that.
-        ArrayList<Double> bestScoresObtained=new ArrayList<Double>(iterationMax);
-        ArrayList<Double> averageScoreObtained=new ArrayList<Double>(iterationMax);
-        
-        double globalbest = Double.NEGATIVE_INFINITY;
-
-        for(int iter=0;iter<iterationMax;iter++){
-        	System.out.println("Starting round:"+iter+" out of:"+iterationMax);
-	        ArrayList<Double> scoresPopulation=new ArrayList<Double>(populationSize);
-	        double curBest=Double.NEGATIVE_INFINITY;
-	        double averageScores=0;
-	        for(int individual=0;individual<populationSize;individual++){
-	        	//visuals=false;
-	        	//if(individual==0){
-	        	//	visuals=true;
-	        	//}
-	        	double[] scoresGiven=ArcadeMachine.runOneGame(game, level1, visuals, neuroevo, recordActionsFile, seed,playerIDTemp);
-	        	double relevantScore=scoresGiven[0];
-	        	scoresPopulation.add(relevantScore);
-	        	averageScores+=relevantScore/populationSize;
-	        	if(curBest<relevantScore){
-					curBest=relevantScore;
-				}
-	        	if(globalbest<relevantScore){
-	        		globalbest = relevantScore;
-	        		Network.saveWeight();
-	        	}
-	        }
-	        System.out.println("best scores in all rounds:" + globalbest);
-        	System.out.println("best in this round:"+curBest);
-        	System.out.println("Average scores in this round:"+averageScores);
-
-        	bestScoresObtained.add(curBest);
-        	averageScoreObtained.add(averageScores);
-	        SNESWeightGenerator.produceNextGeneration(scoresPopulation);
-        }
-        System.out.println("best scores in each iteration:"+bestScoresObtained.toString());
-        System.out.println("Average scores in each iteration:"+averageScoreObtained.toString());
-        System.out.println("Done");
+//        ArrayList<Double> bestScoresObtained=new ArrayList<Double>(iterationMax);
+//        ArrayList<Double> averageScoreObtained=new ArrayList<Double>(iterationMax);
+//        
+//        double globalbest = Double.NEGATIVE_INFINITY;
+//
+//        for(int iter=0;iter<iterationMax;iter++){
+//        	System.out.println("Starting round:"+iter+" out of:"+iterationMax);
+//	        ArrayList<Double> scoresPopulation=new ArrayList<Double>(populationSize);
+//	        double curBest=Double.NEGATIVE_INFINITY;
+//	        double averageScores=0;
+//	        for(int individual=0;individual<populationSize;individual++){
+//	        	//visuals=false;
+//	        	//if(individual==0){
+//	        	//	visuals=true;
+//	        	//}
+//	        	double[] scoresGiven=ArcadeMachine.runOneGame(game, level1, visuals, neuroevo, recordActionsFile, seed,playerIDTemp);
+//	        	double relevantScore=scoresGiven[0];
+//	        	scoresPopulation.add(relevantScore);
+//	        	averageScores+=relevantScore/populationSize;
+//	        	if(curBest<relevantScore){
+//					curBest=relevantScore;
+//				}
+//	        	if(globalbest<relevantScore){
+//	        		globalbest = relevantScore;
+//	        		Network.saveWeight();
+//	        	}
+//	        }
+//	        System.out.println("best scores in all rounds:" + globalbest);
+//        	System.out.println("best in this round:"+curBest);
+//        	System.out.println("Average scores in this round:"+averageScores);
+//
+//        	bestScoresObtained.add(curBest);
+//        	averageScoreObtained.add(averageScores);
+//	        SNESWeightGenerator.produceNextGeneration(scoresPopulation);
+//        }
+//        System.out.println("best scores in each iteration:"+bestScoresObtained.toString());
+//        System.out.println("Average scores in each iteration:"+averageScoreObtained.toString());
+//        System.out.println("Done");
         //ArcadeMachine.runOneGame(game, level1, true, neuroevo, recordActionsFile, seed,playerIDTemp);
         // 3. This replays a game from an action file previously recorded
         //String readActionsFile = "actionsFile_aliens_lvl0.txt";  //This example is for

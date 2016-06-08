@@ -59,8 +59,7 @@ public class GenticsSNES {
 			newPopulation.add(weightArray);
 		}
 		populationNormalSamples=newPopulationNormalSamples;
-		populationWeights= newPopulation;
-		return;
+		populationWeights=newPopulation;
 	}
 	
 	
