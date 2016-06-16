@@ -40,8 +40,8 @@ public class Agent extends AbstractPlayer{
     	//TODO Look into making this more flexible, right now only one of each type is used as input
     	Vector2d avatarPosition=stateObs.getAvatarPosition();
     	
-//    	Double avatar_x = avatarPosition.x;
-//    	Double avatar_y = avatarPosition.y;
+    	Double avatar_x = avatarPosition.x;
+    	Double avatar_y = avatarPosition.y;
 //    	System.out.println(avatar_x + " " + avatar_y + " " + stateObs.getBlockSize());
     	
     	inputs.add(stateObs.getGameScore());
@@ -89,80 +89,188 @@ public class Agent extends AbstractPlayer{
 //    	double movableDist;
 //    	double NPCDist;
 //    	double selfCreatedDist;
-    	if(!(immovableObservations==null)){
-    		if(immovableObservations[0].size()<1){
-    			//immovableDist=0;
-    			inputs.add(0.0);
-    			inputs.add(0.0);
-    			inputs.add(0.0);
-    		}else{
-    			//immovableDist=immovableObservations[0].get(0).sqDist;
-    			inputs.add((double)immovableObservations[0].get(0).itype);
-    			inputs.add((double)immovableObservations[0].get(0).position.x);
-    			inputs.add((double)immovableObservations[0].get(0).position.y);
-    		}
-    	}else{
-    		//immovableDist=0;
-    		inputs.add(0.0);
-			inputs.add(0.0);
-			inputs.add(0.0);
+    	boolean useRelativePosition=true;
+    	if(useRelativePosition){
+	    	if(!(immovableObservations==null)){
+	    		if(immovableObservations[0].size()<1){
+	    			//immovableDist=0;
+	    			inputs.add(0.0);
+	    			inputs.add(0.0);
+	    			inputs.add(0.0);
+	    		}else{
+	    			inputs.add(immovableObservations[0].get(0).sqDist);
+	    			double xDistance=immovableObservations[0].get(0).position.x-avatar_x;
+	    			double yDistance=immovableObservations[0].get(0).position.y-avatar_y;
+	    			if(Math.abs(xDistance)>Math.abs(yDistance)){
+	    				inputs.add(Math.signum(xDistance));
+	    				inputs.add(0.0);
+	    			}
+	    			else{
+	    				inputs.add(0.0);
+	    				inputs.add(Math.signum(yDistance));
+	    			}
+	    		}
+	    	}else{
+	    		//immovableDist=0;
+	    		inputs.add(0.0);
+				inputs.add(0.0);
+				inputs.add(0.0);
+	    	}
+	    	
+	    	if(!(movableObservations==null)){
+	    		if(movableObservations[0].size()<1){
+	    			//movableDist=0;
+	    			inputs.add(0.0);
+	    			inputs.add(0.0);
+	    			inputs.add(0.0);
+	    		}else{
+	    			inputs.add(movableObservations[0].get(0).sqDist);
+	    			double xDistance=movableObservations[0].get(0).position.x-avatar_x;
+	    			double yDistance=movableObservations[0].get(0).position.y-avatar_y;
+	    			if(Math.abs(xDistance)<Math.abs(yDistance)){
+	    				inputs.add(Math.signum(xDistance));
+	    				inputs.add(0.0);
+	    			}
+	    			else{
+	    				inputs.add(0.0);
+	    				inputs.add(Math.signum(yDistance));
+	    			}	    		
+	    		}
+	    	}else{
+	    		//movableDist=0;
+	    		inputs.add(0.0);
+				inputs.add(0.0);
+				inputs.add(0.0);
+	    	}
+	    	
+	    	if(!(NPCObservations==null)){
+	    		if(NPCObservations[0].size()<1){
+	    			//NPCDist=0;
+	    			inputs.add(0.0);
+	    			inputs.add(0.0);
+	    			inputs.add(0.0);
+	    		}else{
+	    			inputs.add(NPCObservations[0].get(0).sqDist);
+	    			double xDistance=NPCObservations[0].get(0).position.x-avatar_x;
+	    			double yDistance=NPCObservations[0].get(0).position.y-avatar_y;
+	    			if(Math.abs(xDistance)<Math.abs(yDistance)){
+	    				inputs.add(Math.signum(xDistance));
+	    				inputs.add(0.0);
+	    			}
+	    			else{
+	    				inputs.add(0.0);
+	    				inputs.add(Math.signum(yDistance));
+	    			}
+	    		}
+	    	}else{
+	    		//NPCDist=0;
+	    		inputs.add(0.0);
+				inputs.add(0.0);
+				inputs.add(0.0);
+	    	}
+	    	
+	    	if(!(selfCreatedObservations==null)){
+	    		if(selfCreatedObservations[0].size()<1){
+	    			//selfCreatedDist=0;
+	    			inputs.add(0.0);
+	    			inputs.add(0.0);
+	    			inputs.add(0.0);
+	    		}else{
+	    			inputs.add(selfCreatedObservations[0].get(0).sqDist);
+	    			double xDistance=selfCreatedObservations[0].get(0).position.x-avatar_x;
+	    			double yDistance=selfCreatedObservations[0].get(0).position.y-avatar_y;
+	    			if(Math.abs(xDistance)<Math.abs(yDistance)){
+	    				inputs.add(Math.signum(xDistance));
+	    				inputs.add(0.0);
+	    			}
+	    			else{
+	    				inputs.add(0.0);
+	    				inputs.add(Math.signum(yDistance));
+	    			}
+	    		}
+	    	}else{
+	    		//selfCreatedDist=0;
+	    		inputs.add(0.0);
+				inputs.add(0.0);
+				inputs.add(0.0);
+	    	}
     	}
-    	
-    	if(!(movableObservations==null)){
-    		if(movableObservations[0].size()<1){
-    			//movableDist=0;
+    	else{
+    		if(!(immovableObservations==null)){
+        		if(immovableObservations[0].size()<1){
+        			//immovableDist=0;
+        			inputs.add(0.0);
+        			inputs.add(0.0);
+        			inputs.add(0.0);
+        		}else{
+        			//immovableDist=immovableObservations[0].get(0).sqDist;
+        			inputs.add((double)immovableObservations[0].get(0).itype);
+        			inputs.add((double)immovableObservations[0].get(0).position.x);
+        			inputs.add((double)immovableObservations[0].get(0).position.y);
+        		}
+        	}else{
+        		//immovableDist=0;
+        		inputs.add(0.0);
     			inputs.add(0.0);
     			inputs.add(0.0);
-    			inputs.add(0.0);
-    		}else{
-    			//movableDist=movableObservations[0].get(0).sqDist;
-    			inputs.add((double)movableObservations[0].get(0).itype);
-    			inputs.add((double)movableObservations[0].get(0).position.x);
-    			inputs.add((double)movableObservations[0].get(0).position.y);
-    		}
-    	}else{
-    		//movableDist=0;
-    		inputs.add(0.0);
-			inputs.add(0.0);
-			inputs.add(0.0);
-    	}
-    	
-    	if(!(NPCObservations==null)){
-    		if(NPCObservations[0].size()<1){
-    			//NPCDist=0;
-    			inputs.add(0.0);
-    			inputs.add(0.0);
-    			inputs.add(0.0);
-    		}else{
-    			//NPCDist=NPCObservations[0].get(0).sqDist;
-    			inputs.add((double)NPCObservations[0].get(0).itype);
-    			inputs.add((double)NPCObservations[0].get(0).position.x);
-    			inputs.add((double)NPCObservations[0].get(0).position.y);
-    		}
-    	}else{
-    		//NPCDist=0;
-    		inputs.add(0.0);
-			inputs.add(0.0);
-			inputs.add(0.0);
-    	}
-    	
-    	if(!(selfCreatedObservations==null)){
-    		if(selfCreatedObservations[0].size()<1){
-    			//selfCreatedDist=0;
+        	}
+        	
+        	if(!(movableObservations==null)){
+        		if(movableObservations[0].size()<1){
+        			//movableDist=0;
+        			inputs.add(0.0);
+        			inputs.add(0.0);
+        			inputs.add(0.0);
+        		}else{
+        			//movableDist=movableObservations[0].get(0).sqDist;
+        			inputs.add((double)movableObservations[0].get(0).itype);
+        			inputs.add((double)movableObservations[0].get(0).position.x);
+        			inputs.add((double)movableObservations[0].get(0).position.y);
+        		}
+        	}else{
+        		//movableDist=0;
+        		inputs.add(0.0);
     			inputs.add(0.0);
     			inputs.add(0.0);
+        	}
+        	
+        	if(!(NPCObservations==null)){
+        		if(NPCObservations[0].size()<1){
+        			//NPCDist=0;
+        			inputs.add(0.0);
+        			inputs.add(0.0);
+        			inputs.add(0.0);
+        		}else{
+        			//NPCDist=NPCObservations[0].get(0).sqDist;
+        			inputs.add((double)NPCObservations[0].get(0).itype);
+        			inputs.add((double)NPCObservations[0].get(0).position.x);
+        			inputs.add((double)NPCObservations[0].get(0).position.y);
+        		}
+        	}else{
+        		//NPCDist=0;
+        		inputs.add(0.0);
     			inputs.add(0.0);
-    		}else{
-    			//selfCreatedDist=selfCreatedObservations[0].get(0).sqDist;
-    			inputs.add((double)selfCreatedObservations[0].get(0).itype);
-    			inputs.add((double)selfCreatedObservations[0].get(0).position.x);
-    			inputs.add((double)selfCreatedObservations[0].get(0).position.y);
-    		}
-    	}else{
-    		//selfCreatedDist=0;
-    		inputs.add(0.0);
-			inputs.add(0.0);
-			inputs.add(0.0);
+    			inputs.add(0.0);
+        	}
+        	
+        	if(!(selfCreatedObservations==null)){
+        		if(selfCreatedObservations[0].size()<1){
+        			//selfCreatedDist=0;
+        			inputs.add(0.0);
+        			inputs.add(0.0);
+        			inputs.add(0.0);
+        		}else{
+        			//selfCreatedDist=selfCreatedObservations[0].get(0).sqDist;
+        			inputs.add((double)selfCreatedObservations[0].get(0).itype);
+        			inputs.add((double)selfCreatedObservations[0].get(0).position.x);
+        			inputs.add((double)selfCreatedObservations[0].get(0).position.y);
+        		}
+        	}else{
+        		//selfCreatedDist=0;
+        		inputs.add(0.0);
+    			inputs.add(0.0);
+    			inputs.add(0.0);
+        	}
     	}
     	
 //    	inputs.add(immovableDist);
