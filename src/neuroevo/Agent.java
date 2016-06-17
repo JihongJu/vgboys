@@ -90,110 +90,229 @@ public class Agent extends AbstractPlayer{
 //    	double NPCDist;
 //    	double selfCreatedDist;
     	boolean useRelativePosition=true;
+    	boolean oneHotDirection=false;
     	if(useRelativePosition){
-	    	if(!(immovableObservations==null)){
-	    		if(immovableObservations[0].size()<1){
-	    			//immovableDist=0;
-	    			inputs.add(0.0);
-	    			inputs.add(0.0);
-	    			inputs.add(0.0);
-	    		}else{
-	    			inputs.add(immovableObservations[0].get(0).sqDist);
-	    			double xDistance=immovableObservations[0].get(0).position.x-avatar_x;
-	    			double yDistance=immovableObservations[0].get(0).position.y-avatar_y;
-	    			if(Math.abs(xDistance)>Math.abs(yDistance)){
-	    				inputs.add(Math.signum(xDistance));
-	    				inputs.add(0.0);
-	    			}
-	    			else{
-	    				inputs.add(0.0);
-	    				inputs.add(Math.signum(yDistance));
-	    			}
-	    		}
-	    	}else{
-	    		//immovableDist=0;
-	    		inputs.add(0.0);
-				inputs.add(0.0);
-				inputs.add(0.0);
-	    	}
-	    	
-	    	if(!(movableObservations==null)){
-	    		if(movableObservations[0].size()<1){
-	    			//movableDist=0;
-	    			inputs.add(0.0);
-	    			inputs.add(0.0);
-	    			inputs.add(0.0);
-	    		}else{
-	    			inputs.add(movableObservations[0].get(0).sqDist);
-	    			double xDistance=movableObservations[0].get(0).position.x-avatar_x;
-	    			double yDistance=movableObservations[0].get(0).position.y-avatar_y;
-	    			if(Math.abs(xDistance)<Math.abs(yDistance)){
-	    				inputs.add(Math.signum(xDistance));
-	    				inputs.add(0.0);
-	    			}
-	    			else{
-	    				inputs.add(0.0);
-	    				inputs.add(Math.signum(yDistance));
-	    			}	    		
-	    		}
-	    	}else{
-	    		//movableDist=0;
-	    		inputs.add(0.0);
-				inputs.add(0.0);
-				inputs.add(0.0);
-	    	}
-	    	
-	    	if(!(NPCObservations==null)){
-	    		if(NPCObservations[0].size()<1){
-	    			//NPCDist=0;
-	    			inputs.add(0.0);
-	    			inputs.add(0.0);
-	    			inputs.add(0.0);
-	    		}else{
-	    			inputs.add(NPCObservations[0].get(0).sqDist);
-	    			double xDistance=NPCObservations[0].get(0).position.x-avatar_x;
-	    			double yDistance=NPCObservations[0].get(0).position.y-avatar_y;
-	    			if(Math.abs(xDistance)<Math.abs(yDistance)){
-	    				inputs.add(Math.signum(xDistance));
-	    				inputs.add(0.0);
-	    			}
-	    			else{
-	    				inputs.add(0.0);
-	    				inputs.add(Math.signum(yDistance));
-	    			}
-	    		}
-	    	}else{
-	    		//NPCDist=0;
-	    		inputs.add(0.0);
-				inputs.add(0.0);
-				inputs.add(0.0);
-	    	}
-	    	
-	    	if(!(selfCreatedObservations==null)){
-	    		if(selfCreatedObservations[0].size()<1){
-	    			//selfCreatedDist=0;
-	    			inputs.add(0.0);
-	    			inputs.add(0.0);
-	    			inputs.add(0.0);
-	    		}else{
-	    			inputs.add(selfCreatedObservations[0].get(0).sqDist);
-	    			double xDistance=selfCreatedObservations[0].get(0).position.x-avatar_x;
-	    			double yDistance=selfCreatedObservations[0].get(0).position.y-avatar_y;
-	    			if(Math.abs(xDistance)<Math.abs(yDistance)){
-	    				inputs.add(Math.signum(xDistance));
-	    				inputs.add(0.0);
-	    			}
-	    			else{
-	    				inputs.add(0.0);
-	    				inputs.add(Math.signum(yDistance));
-	    			}
-	    		}
-	    	}else{
-	    		//selfCreatedDist=0;
-	    		inputs.add(0.0);
-				inputs.add(0.0);
-				inputs.add(0.0);
-	    	}
+    		if(oneHotDirection){
+		    	if(!(immovableObservations==null)){
+		    		if(immovableObservations[0].size()<1){
+		    			//immovableDist=0;
+		    			inputs.add(0.0);
+		    			inputs.add(0.0);
+		    			inputs.add(0.0);
+		    		}else{
+		    			inputs.add(immovableObservations[0].get(0).sqDist);
+		    			double xDistance=immovableObservations[0].get(0).position.x-avatar_x;
+		    			double yDistance=immovableObservations[0].get(0).position.y-avatar_y;
+		    			if(Math.abs(xDistance)>Math.abs(yDistance)){
+		    				inputs.add(Math.signum(xDistance));
+		    				inputs.add(0.0);
+		    			}
+		    			else{
+		    				inputs.add(0.0);
+		    				inputs.add(Math.signum(yDistance));
+		    			}
+		    		}
+		    	}else{
+		    		//immovableDist=0;
+		    		inputs.add(0.0);
+					inputs.add(0.0);
+					inputs.add(0.0);
+		    	}
+		    	
+		    	if(!(movableObservations==null)){
+		    		if(movableObservations[0].size()<1){
+		    			//movableDist=0;
+		    			inputs.add(0.0);
+		    			inputs.add(0.0);
+		    			inputs.add(0.0);
+		    		}else{
+		    			inputs.add(movableObservations[0].get(0).sqDist);
+		    			double xDistance=movableObservations[0].get(0).position.x-avatar_x;
+		    			double yDistance=movableObservations[0].get(0).position.y-avatar_y;
+		    			if(Math.abs(xDistance)<Math.abs(yDistance)){
+		    				inputs.add(Math.signum(xDistance));
+		    				inputs.add(0.0);
+		    			}
+		    			else{
+		    				inputs.add(0.0);
+		    				inputs.add(Math.signum(yDistance));
+		    			}	    		
+		    		}
+		    	}else{
+		    		//movableDist=0;
+		    		inputs.add(0.0);
+					inputs.add(0.0);
+					inputs.add(0.0);
+		    	}
+		    	
+		    	if(!(NPCObservations==null)){
+		    		if(NPCObservations[0].size()<1){
+		    			//NPCDist=0;
+		    			inputs.add(0.0);
+		    			inputs.add(0.0);
+		    			inputs.add(0.0);
+		    		}else{
+		    			inputs.add(NPCObservations[0].get(0).sqDist);
+		    			double xDistance=NPCObservations[0].get(0).position.x-avatar_x;
+		    			double yDistance=NPCObservations[0].get(0).position.y-avatar_y;
+		    			if(Math.abs(xDistance)<Math.abs(yDistance)){
+		    				inputs.add(Math.signum(xDistance));
+		    				inputs.add(0.0);
+		    			}
+		    			else{
+		    				inputs.add(0.0);
+		    				inputs.add(Math.signum(yDistance));
+		    			}
+		    		}
+		    	}else{
+		    		//NPCDist=0;
+		    		inputs.add(0.0);
+					inputs.add(0.0);
+					inputs.add(0.0);
+		    	}
+		    	
+		    	if(!(selfCreatedObservations==null)){
+		    		if(selfCreatedObservations[0].size()<1){
+		    			//selfCreatedDist=0;
+		    			inputs.add(0.0);
+		    			inputs.add(0.0);
+		    			inputs.add(0.0);
+		    		}else{
+		    			double sqDistance=selfCreatedObservations[0].get(0).sqDist;
+		    			inputs.add(sqDistance);
+		    			if(sqDistance==0){
+		    				inputs.add(0.0);
+		    				inputs.add(0.0);
+		    			}
+		    			else{
+			    			double xDistance=selfCreatedObservations[0].get(0).position.x-avatar_x;
+			    			double yDistance=selfCreatedObservations[0].get(0).position.y-avatar_y;
+			    			if(Math.abs(xDistance)<Math.abs(yDistance)){
+			    				inputs.add(Math.signum(xDistance));
+			    				inputs.add(0.0);
+			    			}
+			    			else{
+			    				inputs.add(0.0);
+			    				inputs.add(Math.signum(yDistance));
+			    			}
+		    			}
+		    		}
+		    	}else{
+		    		//selfCreatedDist=0;
+		    		inputs.add(0.0);
+					inputs.add(0.0);
+					inputs.add(0.0);
+		    	}
+    		}//Start non-onehot
+    		else{
+    			if(!(immovableObservations==null)){
+		    		if(immovableObservations[0].size()<1){
+		    			//immovableDist=0;
+		    			inputs.add(0.0);
+		    			inputs.add(0.0);
+		    			inputs.add(0.0);
+		    		}else{
+		    			double sqDistance=immovableObservations[0].get(0).sqDist;
+		    			inputs.add(sqDistance);
+		    			if(sqDistance==0){
+		    				inputs.add(0.0);
+		    				inputs.add(0.0);
+		    			}
+		    			else{
+			    			double xDistance=immovableObservations[0].get(0).position.x-avatar_x;
+			    			double yDistance=immovableObservations[0].get(0).position.y-avatar_y;
+		    				inputs.add(xDistance/sqDistance);
+		    				inputs.add(yDistance/sqDistance);
+		    			}
+		    		}
+		    	}else{
+		    		//immovableDist=0;
+		    		inputs.add(0.0);
+					inputs.add(0.0);
+					inputs.add(0.0);
+		    	}
+		    	
+		    	if(!(movableObservations==null)){
+		    		if(movableObservations[0].size()<1){
+		    			//movableDist=0;
+		    			inputs.add(0.0);
+		    			inputs.add(0.0);
+		    			inputs.add(0.0);
+		    		}else{
+		    			double sqDistance=movableObservations[0].get(0).sqDist;
+		    			inputs.add(sqDistance);
+		    			if(sqDistance==0){
+		    				inputs.add(0.0);
+		    				inputs.add(0.0);
+		    			}
+		    			else{
+			    			double xDistance=movableObservations[0].get(0).position.x-avatar_x;
+			    			double yDistance=movableObservations[0].get(0).position.y-avatar_y;
+			    			inputs.add(xDistance/sqDistance);
+		    				inputs.add(yDistance/sqDistance);	    
+		    			}
+		    		}
+		    	}else{
+		    		//movableDist=0;
+		    		inputs.add(0.0);
+					inputs.add(0.0);
+					inputs.add(0.0);
+		    	}
+		    	
+		    	if(!(NPCObservations==null)){
+		    		if(NPCObservations[0].size()<1){
+		    			//NPCDist=0;
+		    			inputs.add(0.0);
+		    			inputs.add(0.0);
+		    			inputs.add(0.0);
+		    		}else{
+		    			double sqDistance=NPCObservations[0].get(0).sqDist;
+		    			inputs.add(sqDistance);
+		    			if(sqDistance==0){
+		    				inputs.add(0.0);
+		    				inputs.add(0.0);
+		    			}
+		    			else{
+			    			double xDistance=NPCObservations[0].get(0).position.x-avatar_x;
+			    			double yDistance=NPCObservations[0].get(0).position.y-avatar_y;
+			    			inputs.add(xDistance/sqDistance);
+		    				inputs.add(yDistance/sqDistance);
+		    			}
+		    		}
+		    	}else{
+		    		//NPCDist=0;
+		    		inputs.add(0.0);
+					inputs.add(0.0);
+					inputs.add(0.0);
+		    	}
+		    	
+		    	if(!(selfCreatedObservations==null)){
+		    		if(selfCreatedObservations[0].size()<1){
+		    			//selfCreatedDist=0;
+		    			inputs.add(0.0);
+		    			inputs.add(0.0);
+		    			inputs.add(0.0);
+		    		}else{
+		    			double sqDistance=selfCreatedObservations[0].get(0).sqDist;
+		    			inputs.add(sqDistance);
+		    			if(sqDistance==0){
+		    				inputs.add(0.0);
+		    				inputs.add(0.0);
+		    			}
+		    			else{
+			    			double xDistance=selfCreatedObservations[0].get(0).position.x-avatar_x;
+			    			double yDistance=selfCreatedObservations[0].get(0).position.y-avatar_y;
+			    			inputs.add(xDistance/sqDistance);
+		    				inputs.add(yDistance/sqDistance);
+		    			}
+		    		}
+		    	}else{
+		    		//selfCreatedDist=0;
+		    		inputs.add(0.0);
+					inputs.add(0.0);
+					inputs.add(0.0);
+		    	}
+    		}
     	}
     	else{
     		if(!(immovableObservations==null)){
@@ -346,7 +465,7 @@ public class Agent extends AbstractPlayer{
     private Types.ACTIONS selectActionEpsilonGreedy(ArrayList<Types.ACTIONS> actionsPossible,ArrayList<Double> outputs){
     	//TODO select best output given inputs (find set of possibles, find from that set the one with the highest score)
     	double bestScore=Double.NEGATIVE_INFINITY;
-    	double epsilon=0.3;
+    	double epsilon=0.1;
     	if(randomGenerator.nextDouble()<epsilon){
     		return actionsPossible.get(randomGenerator.nextInt(actionsPossible.size()));
     	}

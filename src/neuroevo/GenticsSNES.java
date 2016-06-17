@@ -34,7 +34,7 @@ public class GenticsSNES {
 		}
 		//TODO define good start values
 		double startMean=0;
-		double startSigma=0.1;
+		double startSigma=0.4;
 		weightMean=new ArrayList<Double>(Collections.nCopies(weightAmount, startMean));
 		weightSigma=new ArrayList<Double>(Collections.nCopies(weightAmount, startSigma));
 		
@@ -97,18 +97,13 @@ public class GenticsSNES {
 		nextPopToSend=0;
 		curGeneration+=1;
 		if(scores.size()==populationSize){
-			//Moved utitility calculation to own function for more modularity
-			/*
-			IndexSortingComparator comparator = new IndexSortingComparator(scores);
-			Integer[] indexes = comparator.createIndexArray();
-			Arrays.sort(indexes, comparator);
-			Integer[] utilities=new Integer[populationSize];
-			for(int i=0;i<populationSize;i++){
-				utilities[indexes[i]]=populationSize-i;
-			}
-			*/
-			Double[] utilities=getUtilities(scores);
-			
+			//Double[] utilities=getUtilitiesScoreNormalised(scores);
+			//Double[] utilities=getUtilitiesExponential(scores,1.0);
+			//Double[] utilities=getUtilitiesScoreItself(scores);
+			//Double[] utilities=getUtilitiesRankedSigmoid(scores);
+			Double[] utilities=getUtilitiesLinear(scores);
+
+
 			Double[] weightGradients=new Double[weightAmount];
 			Double[] sigmaGradients=new Double[weightAmount];
 			Arrays.fill(weightGradients,0.0);
@@ -137,7 +132,8 @@ public class GenticsSNES {
 		}
 	}
 	
-	private Double[] getUtilities(ArrayList<Double> scores){
+	/*
+	private Double[] getUtilitiesLinear(ArrayList<Double> scores){
 		IndexSortingComparator comparator = new IndexSortingComparator(scores);
 		Integer[] indexes = comparator.createIndexArray();
 		Arrays.sort(indexes, comparator);
@@ -147,5 +143,129 @@ public class GenticsSNES {
 		}
 		return utilities;
 	}
+	
+	private Double[] getUtilitiesExponential(ArrayList<Double> scores,double powValue){
+		IndexSortingComparator comparator = new IndexSortingComparator(scores);
+		Integer[] indexes = comparator.createIndexArray();
+		Arrays.sort(indexes, comparator);
+		Double[] utilities=new Double[populationSize];
+		double divisionValue=Math.pow(1.0*populationSize,powValue);
+		for(int i=0;i<populationSize;i++){
+			utilities[indexes[i]]=(double) Math.pow(1.0*(populationSize-i), powValue)/divisionValue;
+		}
+		return utilities;
+	}
+	
+	private Double[] getUtilitiesRankedSigmoid(ArrayList<Double> scores){
+		IndexSortingComparator comparator = new IndexSortingComparator(scores);
+		Integer[] indexes = comparator.createIndexArray();
+		Arrays.sort(indexes, comparator);
+		Double[] utilities=new Double[populationSize];
+		for(int i=0;i<populationSize;i++){
+			utilities[indexes[i]]=(double) 1/(1+Math.exp(-(0.5*populationSize-i)/populationSize));
+		}
+		return utilities;
+	}
+	*/
+	
+	private Double[] getUtilitiesLinear(ArrayList<Double> scores){
+		Double[] rank=getRanking(scores);
+		Double[] utilities=new Double[populationSize];
+		for(int i=0;i<populationSize;i++){
+			utilities[i]=(double) (rank[i])/populationSize;
+		}
+		return utilities;
+	}
+	
+	private Double[] getUtilitiesExponential(ArrayList<Double> scores,double powValue){
+		Double[] rank=getRanking(scores);
+		Double[] utilities=new Double[populationSize];
+		double divisionValue=Math.pow(1.0*populationSize,powValue);
+		for(int i=0;i<populationSize;i++){
+			utilities[i]=(double) Math.pow(1.0*(rank[i]), powValue)/divisionValue;
+		}
+		return utilities;
+	}
+	
+	private Double[] getUtilitiesRankedSigmoid(ArrayList<Double> scores){
+		Double[] rank=getRanking(scores);
+		Double[] utilities=new Double[populationSize];
+		for(int i=0;i<populationSize;i++){
+			utilities[i]=(double) 1/(1+Math.exp(-(rank[i]-0.5*populationSize)/populationSize));
+		}
+		return utilities;
+	}
+	
+	private Double[] getUtilitiesScoreNormalised(ArrayList<Double> scores){
+		//IndexSortingComparator comparator = new IndexSortingComparator(scores);
+		//Integer[] indexes = comparator.createIndexArray();
+		//Arrays.sort(indexes, comparator);
+		double maximumVal=Collections.max(scores);
+		double minVal=Collections.min(scores);
+		double spread=maximumVal-minVal;
+		double multiplicationFactor;
+		if(spread>0){
+			multiplicationFactor=1/spread;
+		}else{
+			multiplicationFactor=0.0;
+		}
+		Double[] utilities=new Double[populationSize];
+		for(int i=0;i<populationSize;i++){
+			utilities[i]=populationSize*(scores.get(i)-minVal)*multiplicationFactor;
+		}
+		return utilities;
+	}
+	
+	private Double[] getUtilitiesScoreItself(ArrayList<Double> scores){
+		Double[] utilities=new Double[populationSize];
+		for(int i=0;i<populationSize;i++){
+			utilities[i]=scores.get(i);
+		}
+		return utilities;
+	}
+	
+	private Double[] getRanking(ArrayList<Double> scores){
+		//This function is just here to allow one place to change in case another ranking method is going to be used
+		return getRankingEqualsGetOriginal(scores);
+	}
+	
+	private Double[] getRankingEqualsGetWorst(ArrayList<Double> scores){
+		//This function is just here to allow one place to change in case another ranking method is going to be used
+		IndexSortingComparator comparator = new IndexSortingComparator(scores);
+		Integer[] indexes = comparator.createIndexArray();
+		Arrays.sort(indexes, comparator);
+		Double[] rank=new Double[populationSize];
+		rank[indexes[populationSize-1]]=1.0;
+		double prevRank=1.0;
+		double prevVal=scores.get(indexes[populationSize-1]);
+		
+		
+		for(int i=populationSize-2;i>=0;i--){
+			if(scores.get(indexes[i])==prevVal){
+				rank[indexes[i]]=prevRank;
+			}
+			else{
+				rank[indexes[i]]=(double) populationSize-i;
+				prevRank=(double) populationSize-i;
+				prevVal=(double) (populationSize-i);
+			}
+			prevVal=scores.get(indexes[i]);
+		}
+		return rank;
+	}
+	
+	private Double[] getRankingEqualsGetOriginal(ArrayList<Double> scores){
+		//This function is just here to allow one place to change in case another ranking method is going to be used
+		IndexSortingComparator comparator = new IndexSortingComparator(scores);
+		Integer[] indexes = comparator.createIndexArray();
+		Arrays.sort(indexes, comparator);
+		Double[] rank=new Double[populationSize];
+		rank[indexes[populationSize-1]]=1.0;		
+		for(int i=populationSize-2;i>=0;i--){
+			rank[indexes[i]]=(double) populationSize-i;
+		}
+		return rank;
+	}
+
 	
 }
